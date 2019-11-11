@@ -1,0 +1,14 @@
+{
+  "name": "github-commands",
+  "version": "0.0.1",
+  "description": "autocomplete github commands",
+  "scripts": {
+    "dev": "webextension-toolbox dev",
+    "build": "webextension-toolbox build",
+    "prettier:fix": "prettier --write \"**/*.js\""
+  },
+  "devDependencies": {
+    "prettier": "^1.18.2",
+    "webextension-toolbox": "latest"
+  }
+}

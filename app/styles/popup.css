@@ -1,0 +1,16 @@
+body {
+  width: 200px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-content: stretch;
+}
+
+textarea {
+  flex: 1;
+}
+
+textarea,
+div {
+  margin: 4px;
+}

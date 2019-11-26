@@ -1,3 +1,6 @@
+// match "$var" in "/command $var"
+const varRegex = /(\$\S+)/
+
 class Popup {
   constructor() {
     this.commands = []
@@ -39,10 +42,6 @@ class Popup {
    * @param {HTMLTextAreaElement} textarea
    */
   update(textarea) {
-    function foo() {
-      console.log('onclick')
-    }
-
     const search = textarea.value
     const filteredCommands = search ? this.commands.filter(cmd => cmd.name.startsWith(search)) : []
     this.element.innerHTML = filteredCommands
@@ -59,8 +58,7 @@ class Popup {
     this.element.querySelectorAll('li').forEach(li => {
       li.addEventListener('click', e => {
         e.preventDefault()
-        textarea.value = li.dataset.value
-        this.hide()
+        this.activate(textarea, li.dataset.value)
       })
     })
 
@@ -68,14 +66,29 @@ class Popup {
       textarea.insertAdjacentElement('beforebegin', this.element)
     }
   }
+
+  /**
+   * @param {HTMLTextAreaElement} textarea
+   * @param {string} command
+   */
+  activate(textarea, command) {
+    textarea.value = command
+    this.hide()
+    const res = varRegex.exec(command)
+    if (res && res[0]) {
+      textarea.setSelectionRange(res.index, res.index + res[0].length)
+    }
+  }
 }
 
 const popup = new Popup()
 chrome.storage.sync.get('commands', function({ commands }) {
-  popup.commands = JSON.parse(commands)
+  if (commands) {
+    popup.commands = JSON.parse(commands)
+  }
 })
 
-document.addEventListener('keyup', e => {
+document.addEventListener('keydown', e => {
   switch (e.code) {
     case 'ArrowUp':
       {
@@ -97,8 +110,7 @@ document.addEventListener('keyup', e => {
       {
         if (popup.activated) {
           e.preventDefault()
-          e.target.value = popup.activeCommand
-          popup.hide()
+          popup.activate(e.target, popup.activeCommand)
         }
       }
       break
